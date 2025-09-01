@@ -1,7 +1,10 @@
 import csv
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-# path_csv = os.getenv("CSV_PATH")
-# weapons_path = os.getenv("WEAPONS_LIST_PATH")
+path_csv = os.getenv("CSV_PATH")
+weapons_path = os.getenv("WEAPONS_LIST_PATH")
 
 
 class Dal:
@@ -15,7 +18,7 @@ class Dal:
         return self.csv_like_a_json
 
     def read_list_weapons(self,list_weapons_path):
-        with open(list_weapons_path,"r")as file:
+        with open(list_weapons_path,mode="r")as file:
             self.list_weapons = file.read()
         return self.list_weapons
 

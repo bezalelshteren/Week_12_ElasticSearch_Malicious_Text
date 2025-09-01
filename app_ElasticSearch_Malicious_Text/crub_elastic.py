@@ -7,7 +7,7 @@ load_dotenv()
 
 
 
-elasticsearch_url = os.getenv("ELASTIC_URL")
+
 indices_name = os.getenv("INDEX_NAME")
 
 

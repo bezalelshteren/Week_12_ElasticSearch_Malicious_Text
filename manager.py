@@ -6,12 +6,18 @@ from app_ElasticSearch_Malicious_Text.processor import Processor
 import os
 
 load_dotenv()
-
+import os
 
 elasticsearch_url = os.getenv("ELASTIC_URL")
 indices_name = os.getenv("INDEX_NAME")
 path_csv = os.getenv("CSV_PATH")
-weapons_path = os.getenv("WEAPONS_LIST_PATH")
+weapons_path = os.getenv("WEAPON_LIST_PATH")
+
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+WEAPON_LIST_PATH = os.path.join(BASE_DIR, "..", "csv_file_and_weapons_list", "weapon_list.txt")
+WEAPON_LIST_PATH = os.path.normpath(WEAPON_LIST_PATH)
+
 
 
 class Manager:

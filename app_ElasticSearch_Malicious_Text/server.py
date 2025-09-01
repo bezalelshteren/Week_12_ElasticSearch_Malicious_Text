@@ -8,6 +8,7 @@ load_dotenv()
 app = FastAPI()
 
 print("is connected")
+manage_system:Manager
 
 @app.on_event("startup")
 def manage_the_all_system():
@@ -15,12 +16,14 @@ def manage_the_all_system():
     manage_system = Manager()
     manage_system.insert_from_the_csv()
     manage_system.update_new_fields()
+    manage_system.delete_not_relevant()
 
 @app.get("/read_from_elastic")
 def read_from_mongo_anti():
     try:
-        m
-        return {"ok":""}
+        all_documents = manage_system.crud.search_by_query()
+        print(all_documents)
+        return {"all_documents":all_documents}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
