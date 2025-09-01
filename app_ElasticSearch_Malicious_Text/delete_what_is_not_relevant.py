@@ -7,8 +7,12 @@ class Delete_not_relevant:
     def __init__(self):
         pass
 
-    def check_if_delete_the_document(self,document:dict):
-        if document["Antisemitic"]=='0' and \
-            len(document["weapons_list"])==0 and \
-            (document["score"]=="positive" or document["score"]=="normal"):
-            print()
+
+    def check_if_delete_the_document(self, documents):
+        list_to_delete = (
+            doc["_id"]
+            for doc in documents
+            if doc["_source"].get("Antisemitic") == '0' and
+               len(doc["_source"].get("weapons_list", [])) == 0 and
+               doc["_source"].get("score") in ["positive", "normal"])
+        return list_to_delete

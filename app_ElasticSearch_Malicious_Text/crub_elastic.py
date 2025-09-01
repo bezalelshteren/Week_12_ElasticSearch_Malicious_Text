@@ -22,8 +22,7 @@ class Crud_elastic:
             mapping = {
                     "properties": {
                         "TweetID": {"type": "keyword"},
-                        "CreateDate": {"type": "date",
-                            "format": "yyyy-MM-dd||dd-MM-yyyy||epoch_millis"},
+                        "CreateDate": {"type": "keyword"},
                         "Antisemitic": {"type": "keyword"},
                         "text": {"type": "text",
                             "fields": {"raw": {"type": "keyword"}}},
@@ -62,16 +61,23 @@ class Crud_elastic:
     def search_by_query(self,query=None):
         if query is None:
             all_documents = [hit  for hit in scan(self.es, query={"query":{"match_all":{}}},_source=True, index=self.index_name)]
-
+            # print(all_documents)
         else:
             all_documents = self.es.search(index=self.index_name,query=query)
         return all_documents
 
-    def delete_by_search_or_id(self,query=None,doc_id=None):
+    def delete_by_search_or_id(self,list_to_delete,query=None,doc_id=None):
         try:
-            if query is not None and id is None:
+            if list_to_delete:
+                actions = [{"_op_type": "delete",
+                        "_index": self.index_name,
+                        "_id": doc_id}
+                for doc_id in list_to_delete]
+                success, errors = helpers.bulk(self.es, actions)
+                self.es.indices.refresh(index=self.index_name)
+                return f"{success} is deleted {errors} not deleted"
+            if list_to_delete is None and query is not None and id is None:
                 doc_id = self.search_by_query(query)
-
             res_delete = self.es.delete(index=self.index_name,id=doc_id)
             return f"{doc_id} is deleted {res_delete}"
         except Exception as e:
@@ -82,13 +88,14 @@ class Crud_elastic:
 
     def update_document(self,list_to_update:list,query=None,doc_id=None,update_doc=None):
         try:
+
             actions = [
                 {"_op_type": "update",
                     "_index": self.index_name,
                     "_id": doc_id_apdate,
                     "doc": doc_fields}
                 for doc_id_apdate, doc_fields in list_to_update
-            ]
+                ]
             success,errors = helpers.bulk(self.es, actions)
 
             # if list_to_update is None and doc_id is None and query is not None:
@@ -98,23 +105,3 @@ class Crud_elastic:
         except Exception as e:
             raise e
 
-
-
-# path_csv = os.getenv("CSV_PATH")
-# weapons_path = os.getenv("WEAPONS_LIST_PATH")
-# "*"
-# from data_loader import Dal
-# d = Dal()
-# r = d.read_from_file_to_json(path_csv)
-# u = d.read_list_weapons(weapons_path)
-# "*"
-# from processor import Processor
-#
-# p = Processor(u)
-# p.start_all_process_to_update()
-# f = Crud_elastic(elasticsearch_url)
-# f.delete_all()
-# print(f.es.indices.exists(index=f.index_name))
-# # print(f.es.indices.get_mapping(index=f.index_name))
-# print(f.create_index())
-# f.insert_all(r)

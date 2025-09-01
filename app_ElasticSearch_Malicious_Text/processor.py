@@ -27,7 +27,7 @@ class Processor:
 
     def check_if_their_is_weapons(self,document:dict):
         list_of_weapons = []
-        for weapon in self.weapons_list.split(" "):
+        for weapon in self.weapons_list.splitlines():
             if weapon in document["text"]:
                 list_of_weapons.append(weapon)
         return list_of_weapons
